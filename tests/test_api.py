@@ -219,4 +219,4 @@ def test_redis_found_under_any_prefix(monkeypatch):
 def test_health_reports_configuration_without_values(client):
     body = client.get("/").json()
     assert body["configured"]["admin_email"] is True
-    assert "xamidovasadbek" not in str(body)
+    assert EMAIL not in str(body)  # presence only, never the value
