@@ -48,6 +48,13 @@ async def github_proxy(path: str, request: Request):
     if not target:
         return _error(404, "Not Found")
 
+    # After sign-in the CMS asks whether the user is a collaborator on the repo.
+    # A valid session already proves that (only the admin can get one), and the
+    # GitHub answer depends on token type (fine-grained tokens can fail it), so
+    # answer here: 204 = "yes, collaborator".
+    if request.method == "GET" and path.startswith(f"api/v3/repos/{get_settings().github_repo}/collaborators/"):
+        return Response(status_code=204)
+
     headers = {
         "Accept": request.headers.get("accept", "application/vnd.github+json"),
         "User-Agent": "xamidovasadbek.dev-api",

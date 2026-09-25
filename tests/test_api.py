@@ -220,3 +220,10 @@ def test_health_reports_configuration_without_values(client):
     body = client.get("/").json()
     assert body["configured"]["admin_email"] is True
     assert EMAIL not in str(body)  # presence only, never the value
+
+
+def test_collaborator_check_answered_for_signed_in_admin(client):
+    setup(client)
+    auth = {"authorization": f"token {login(client).json()['token']}"}
+    assert client.get(f"/gh/api/v3/repos/{REPO}/collaborators/someone", headers=auth).status_code == 204
+    assert client.get(f"/gh/api/v3/repos/{REPO}/collaborators/someone").status_code == 401
