@@ -1,0 +1,5 @@
+fastapi==0.141.1
+httpx==0.28.1
+bcrypt==5.0.0
+upstash-redis==1.8.0
+pydantic[email]==2.13.5
