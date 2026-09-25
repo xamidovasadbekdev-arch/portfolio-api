@@ -202,3 +202,21 @@ def test_origins_tolerate_quotes_and_slashes(monkeypatch):
 
     monkeypatch.setenv("ALLOWED_ORIGINS", '"https://xamidovasadbek.dev/", https://www.xamidovasadbek.dev')
     assert get_settings().allowed_origins == ["https://xamidovasadbek.dev", "https://www.xamidovasadbek.dev"]
+
+
+def test_redis_found_under_any_prefix(monkeypatch):
+    from app.config import get_settings
+
+    for name in ("KV_REST_API_URL", "KV_REST_API_TOKEN", "UPSTASH_REDIS_REST_URL", "UPSTASH_REDIS_REST_TOKEN"):
+        monkeypatch.delenv(name, raising=False)
+    monkeypatch.setenv("STORAGE_REST_API_URL", "https://example.upstash.io")
+    monkeypatch.setenv("STORAGE_REST_API_TOKEN", "tok")
+    monkeypatch.setenv("STORAGE_REST_API_READ_ONLY_TOKEN", "ro")
+    settings = get_settings()
+    assert (settings.redis_url, settings.redis_token) == ("https://example.upstash.io", "tok")
+
+
+def test_health_reports_configuration_without_values(client):
+    body = client.get("/").json()
+    assert body["configured"]["admin_email"] is True
+    assert "xamidovasadbek" not in str(body)

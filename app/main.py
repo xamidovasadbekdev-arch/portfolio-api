@@ -32,5 +32,16 @@ app.include_router(contact.router)
 
 @app.get("/", tags=["health"])
 def health():
-    """Simple health check."""
-    return {"service": "xamidovasadbek.dev API", "status": "ok"}
+    """Health check. `configured` says which settings are present (never their values)."""
+    settings = get_settings()
+    return {
+        "service": "xamidovasadbek.dev API",
+        "status": "ok",
+        "configured": {
+            "database": bool(settings.redis_url and settings.redis_token),
+            "admin_email": bool(settings.admin_email),
+            "recovery_code": bool(settings.admin_setup_code),
+            "github_token": bool(settings.github_token),
+            "email_sending": bool(settings.resend_api_key),
+        },
+    }
