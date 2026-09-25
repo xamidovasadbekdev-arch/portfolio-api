@@ -1,0 +1,15 @@
+[project]
+name = "portfolio-api"
+version = "1.0.0"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi==0.141.1",
+    "httpx==0.28.1",
+    "bcrypt==5.0.0",
+    "upstash-redis==1.8.0",
+    "pydantic[email]==2.13.5",
+]
+
+# Vercel serves this FastAPI app as a single function; no vercel.json needed.
+[tool.vercel]
+entrypoint = "app.main:app"

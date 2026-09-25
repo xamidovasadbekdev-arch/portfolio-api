@@ -50,7 +50,7 @@ Open http://localhost:8000/docs. The frontend's dev server (`npm run dev`) talks
 
 ## Deploy (Vercel)
 
-`vercel.json` sends every request to `api/index.py`, which serves the FastAPI app. Environment variables (Settings → Environment Variables):
+Vercel detects FastAPI and serves `app.main:app` as a single function (`[tool.vercel]` in `pyproject.toml`). Environment variables (Settings → Environment Variables):
 
 | Name | Value |
 |---|---|
