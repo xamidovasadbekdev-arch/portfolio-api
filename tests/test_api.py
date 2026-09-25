@@ -185,3 +185,20 @@ def test_contact_email_failure(client, monkeypatch):
 
     monkeypatch.setattr(contact_route, "send_email", fail)
     assert client.post("/contact", json=MESSAGE).status_code == 502
+
+
+def test_empty_settings_fall_back_to_defaults(monkeypatch):
+    from app.config import get_settings
+
+    monkeypatch.setenv("ALLOWED_ORIGINS", "")
+    monkeypatch.setenv("CONTACT_FROM", "")
+    settings = get_settings()
+    assert "https://xamidovasadbek.dev" in settings.allowed_origins
+    assert "resend.dev" in settings.contact_from
+
+
+def test_origins_tolerate_quotes_and_slashes(monkeypatch):
+    from app.config import get_settings
+
+    monkeypatch.setenv("ALLOWED_ORIGINS", '"https://xamidovasadbek.dev/", https://www.xamidovasadbek.dev')
+    assert get_settings().allowed_origins == ["https://xamidovasadbek.dev", "https://www.xamidovasadbek.dev"]
