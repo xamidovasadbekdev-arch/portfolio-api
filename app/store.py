@@ -44,6 +44,27 @@ class MemoryStore:
         self._data.setdefault(key, {}).update({k: str(v) for k, v in values.items()})
         return len(values)
 
+    def set(self, key, value, nx=None):
+        if nx and self._alive(key):
+            return None
+        self._data[key] = str(value)
+        return True
+
+    def rpush(self, key, *elements):
+        items = self._data.setdefault(key, [])
+        items.extend(str(e) for e in elements)
+        return len(items)
+
+    def lrange(self, key, start, stop):
+        items = self._data.get(key, []) if self._alive(key) else []
+        return items[start:] if stop == -1 else items[start : stop + 1]
+
+    def lrem(self, key, count, element):
+        items = self._data.get(key, [])
+        before = len(items)
+        self._data[key] = [item for item in items if item != str(element)]
+        return before - len(self._data[key])
+
 
 _store = None
 

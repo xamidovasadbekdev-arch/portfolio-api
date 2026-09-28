@@ -2,13 +2,14 @@
 
 - Admin sign-in (email + password) and the GitHub proxy the admin panel saves through
 - Contact form that emails messages to the site owner
+- Article comments that the owner approves by email or in the admin
 """
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import get_settings
-from app.routes import auth, contact, github
+from app.routes import auth, comments, contact, github
 
 app = FastAPI(
     title="xamidovasadbek.dev API",
@@ -28,6 +29,7 @@ app.add_middleware(
 app.include_router(auth.router)
 app.include_router(github.router)
 app.include_router(contact.router)
+app.include_router(comments.router)
 
 
 @app.get("/", tags=["health"])

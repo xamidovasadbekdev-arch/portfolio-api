@@ -12,7 +12,11 @@ The frontend ([Personal_blog](https://github.com/xamidovasadbekdev-arch/Personal
 | `POST /password` | Changes the password; signs out every existing session. |
 | `POST /setup` | Sets the first password, or resets a forgotten one, with a recovery code. |
 | `* /gh/{path}` | GitHub API proxy for the admin panel (Sveltia CMS). Checks the session and adds the real GitHub token on the server, so the token never reaches a browser. Only the site repository is reachable. |
-| `GET /` | Health check. |
+| `GET /comments/{slug}` | Approved comments for an article. |
+| `POST /comments/{slug}` | New comment (held for approval). Emails the owner Approve / Delete buttons. Honeypot, 5/hour per IP. |
+| `GET, POST /moderate` | Where the email buttons lead: a confirmation page, then the change (signed link, one comment, 7 days). |
+| `GET /admin/comments`, `POST /admin/comments/{id}/{action}` | Comment moderation for the signed-in owner. |
+| `GET /` , `GET /health/github` | Health checks; show which settings are present, never their values. |
 
 ## How the admin panel signs in
 

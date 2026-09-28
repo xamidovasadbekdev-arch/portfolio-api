@@ -9,6 +9,7 @@ from pydantic import BaseModel, EmailStr, Field
 from app import security
 from app.config import get_settings
 from app.deps import client_ip
+from app.email import send_email
 
 router = APIRouter(tags=["contact"])
 
@@ -24,25 +25,6 @@ class ContactBody(BaseModel):
     message: str = Field(min_length=1, max_length=5000)
     # Hidden form field; people leave it empty, bots fill it in.
     website: str = Field(default="", max_length=200)
-
-
-def send_email(*, subject: str, text: str, html_body: str, reply_to: str) -> None:
-    """Send one email through the Resend API. Raises on failure."""
-    settings = get_settings()
-    response = httpx.post(
-        "https://api.resend.com/emails",
-        headers={"Authorization": f"Bearer {settings.resend_api_key}"},
-        json={
-            "from": settings.contact_from,
-            "to": [settings.admin_email],
-            "reply_to": reply_to,
-            "subject": subject,
-            "text": text,
-            "html": html_body,
-        },
-        timeout=15,
-    )
-    response.raise_for_status()
 
 
 @router.post("/contact")
