@@ -45,3 +45,30 @@ def health():
             "email_sending": bool(settings.resend_api_key),
         },
     }
+
+
+@app.get("/health/github", tags=["health"])
+def github_health():
+    """Which kind of GITHUB_TOKEN is set and what it may do (never the token itself).
+    Saving from the admin needs a classic token with the `repo` scope."""
+    import httpx
+
+    token = get_settings().github_token
+    if not token:
+        return {"token": "missing"}
+    kind = "fine-grained" if token.startswith("github_pat_") else "classic" if token.startswith("ghp_") else "other"
+    try:
+        response = httpx.get(
+            f"https://api.github.com/repos/{get_settings().github_repo}",
+            headers={"Authorization": f"Bearer {token}", "User-Agent": "xamidovasadbek.dev-api"},
+            timeout=10,
+        )
+    except httpx.HTTPError:
+        return {"token": kind, "github": "unreachable"}
+    permissions = (response.json() or {}).get("permissions", {}) if response.status_code == 200 else {}
+    return {
+        "token": kind,
+        "github_status": response.status_code,
+        "scopes": response.headers.get("x-oauth-scopes"),
+        "can_push": permissions.get("push"),
+    }
